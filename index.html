@@ -1181,7 +1181,7 @@ function buildEssayList() {
     const ul = document.getElementById('essay-chron-list');
     ul.innerHTML = '';
     if (!ESSAYS.length) {
-        ul.innerHTML = '<p class="note">No essays yet.</p>';
+        ul.innerHTML = '<p class="note" style="border-left-color:var(--muted)">Under construction — essays and poems coming soon.</p>';
         return;
     }
     ESSAYS.forEach((e, i) => {
@@ -1202,7 +1202,7 @@ function buildPhotoGrid() {
     const grid = document.getElementById('photo-grid');
     grid.innerHTML = '';
     if (!PHOTOS.length) {
-        grid.innerHTML = '<p class="photo-empty" style="grid-column:1/-1">Photos coming soon.</p>';
+        grid.innerHTML = '<p class="photo-empty" style="grid-column:1/-1">Under construction — photography coming soon.</p>';
         return;
     }
     PHOTOS.forEach(ph => {

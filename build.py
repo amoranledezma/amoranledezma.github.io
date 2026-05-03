@@ -254,9 +254,14 @@ def md_to_html(md):
     md = re.sub(r"^##\s+(.+)$",     r"<h2>\1</h2>", md, flags=re.MULTILINE)
     md = re.sub(r"^#\s+(.+)$",      r"<h2>\1</h2>", md, flags=re.MULTILINE)  # h1→h2 (essay title is the H1)
 
-    # 5. Images  ![alt](src)  → <img>
-    md = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)",
-                r'<img src="\2" alt="\1">', md)
+    # 5. Images  ![alt](src)  → <figure> with caption if alt present
+    def _img(m):
+        alt, src2 = m.group(1).strip(), m.group(2).strip()
+        if alt:
+            return ('<figure class="md-figure"><img src="' + src2 + '" alt="' + alt + '">' +
+                    '<figcaption>' + alt + '</figcaption></figure>')
+        return '<img src="' + src2 + '" alt="">'
+    md = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", _img, md)
 
     # 6. Links  [text](href)
     md = re.sub(r"\[([^\]]+)\]\(([^)]+)\)",
@@ -385,9 +390,17 @@ def load_profile():
     if not os.path.isfile(path):
         return {"title": "Profile", "html": ""}
     meta, body = parse_frontmatter(load_text(path))
+    # auto-detect portrait photo
+    photo = None
+    for ext in ("jpg", "jpeg", "png", "webp"):
+        candidate = os.path.join(CONTENT, "profile", "photo." + ext)
+        if os.path.isfile(candidate):
+            photo = "content/profile/photo." + ext
+            break
     return {
         "title": meta.get("title", "Profile"),
         "html": md_to_html(body),
+        "photo": photo,
         "cv_pdf": "content/profile/cv.pdf"
             if os.path.isfile(os.path.join(CONTENT, "profile", "cv.pdf"))
             else None,

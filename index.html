@@ -245,6 +245,50 @@ body.dark .status-review    { color:#D6A285; }
 .poem-body { white-space:pre-line; line-height:2.2; font-size:1.18rem; }
 .poem-body p { margin-bottom:2rem; }
 
+/* ── PROFILE EPIGRAPH ── */
+.profile-epigraph {
+    max-width:560px; margin-bottom:2.8rem;
+    border-left:2px solid var(--accent); padding-left:1.4rem;
+}
+.profile-epigraph p {
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    font-size:1.12rem; line-height:1.8; color:var(--body-txt);
+    margin-bottom:.7rem;
+}
+.profile-epigraph cite {
+    font-size:.82rem; letter-spacing:.10em; color:var(--muted);
+    text-transform:uppercase; font-style:normal;
+}
+
+/* ── PROFILE PHOTO ── */
+#profile-photo-wrap { margin-bottom:2.8rem; }
+.profile-photo {
+    width:100%; max-width:680px;
+    max-height:420px; object-fit:cover;
+    border-radius:2px;
+    filter: saturate(0.85) contrast(1.05);
+    transition: filter .5s;
+}
+body.dark .profile-photo { filter: saturate(0.7) contrast(1.1) brightness(0.9); }
+
+/* ── PROFILE figures & captions ── */
+.md-figure {
+    margin: 2.8rem 0 2rem; max-width:680px;
+    border:none; padding:0;
+}
+.md-figure img {
+    width:100%; display:block; border-radius:2px;
+    filter: saturate(0.85) contrast(1.05);
+    transition: filter .5s;
+    pointer-events: none; cursor: default;
+}
+body.dark .md-figure img { filter: saturate(0.7) contrast(1.1) brightness(0.88); }
+.md-figure figcaption {
+    margin-top:.65rem;
+    font-size:.8rem; font-style:italic; color:var(--muted);
+    letter-spacing:.05em; line-height:1.5;
+}
+
 /* ── PROFILE ── */
 #profile-body { max-width:680px; }
 #profile-body p { font-size:1.12rem; line-height:1.95; margin-bottom:1.5rem; color:var(--body-txt); }
@@ -375,8 +419,15 @@ body.dark .katex { color: var(--body-txt); }
     <svg class="section-leaf" viewBox="0 0 64 64" data-leaf-deco></svg>
     <p class="section-eyebrow" data-i18n="profile.eyebrow">about me</p>
     <h2 class="section-title" data-i18n="profile.title">Profile</h2>
-    <p class="section-subtitle" data-i18n="profile.subtitle">Mathematician, writer, a curious mind between rigour and intuition.</p>
+    <blockquote class="profile-epigraph">
+        <p>Let us now try, guided by the axiomatic concept, to look over
+        the whole of the mathematical universe&hellip; The organizing principle
+        will be the concept of a hierarchy of structures, going from the
+        simple to the complex, from the general to the particular.</p>
+        <cite>Nicolas Bourbaki, <em>The Architecture of Mathematics</em> (1950)</cite>
+    </blockquote>
     <div class="divider"></div>
+    <div id="profile-photo-wrap"></div>
     <div id="profile-body">
         <p class="note">Loading profile…</p>
     </div>
@@ -1223,9 +1274,17 @@ function buildPhotoGrid() {
 }
 
 function buildProfile() {
+    // Photo
+    const photoWrap = document.getElementById('profile-photo-wrap');
+    photoWrap.innerHTML = '';
+    if (PROFILE.photo) {
+        photoWrap.innerHTML = `<img class="profile-photo" src="${PROFILE.photo}" alt="Photograph by Ángel Morán">`;
+    }
+    // Bio
     const body = document.getElementById('profile-body');
     body.innerHTML = PROFILE.html || '<p class="note">Profile coming soon.</p>';
     renderMath(body);
+    // CV link
     const cvRow = document.getElementById('profile-cv-row');
     cvRow.innerHTML = '';
     if (PROFILE.cv_pdf) {

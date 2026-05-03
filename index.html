@@ -179,14 +179,16 @@ body.dark .section-leaf { opacity:.5; }
     border:1px solid currentColor;
     background: color-mix(in srgb, currentColor 12%, transparent);
 }
-.status-published { color:#6FA85E; }
-.status-accepted  { color:#C9A24A; }
-.status-preprint  { color:#8DA0BC; }
-.status-review    { color:#B8866A; }
-body.dark .status-published { color:#9CCB7A; }
-body.dark .status-accepted  { color:#E1C175; }
-body.dark .status-preprint  { color:#B0C4DD; }
-body.dark .status-review    { color:#D6A285; }
+.status-published  { color:#6FA85E; }
+.status-accepted   { color:#C9A24A; }
+.status-preprint   { color:#8DA0BC; }
+.status-review     { color:#B8866A; }
+.status-submitted  { color:#8DA0BC; }
+body.dark .status-published  { color:#9CCB7A; }
+body.dark .status-accepted   { color:#E1C175; }
+body.dark .status-preprint   { color:#B0C4DD; }
+body.dark .status-review     { color:#D6A285; }
+body.dark .status-submitted  { color:#B0C4DD; }
 
 .chron-list { list-style:none; max-width:780px; }
 .chron-item {
@@ -273,7 +275,7 @@ body.dark .profile-photo { filter: saturate(0.7) contrast(1.1) brightness(0.9); 
 
 /* ── PROFILE figures & captions ── */
 .md-figure {
-    margin: 2.8rem 0 2rem; max-width:680px;
+    margin: 2.8rem 0 2rem; max-width:320px;
     border:none; padding:0;
 }
 .md-figure img {
@@ -1201,7 +1203,7 @@ function buildPubList() {
             <div>
                 <div class="chron-row-top">${pill}</div>
                 <div class="chron-title">${p.title}</div>
-                <div class="chron-meta">${p.authors || ''} · ${p.journal || ''}</div>
+                <div class="chron-meta">${[p.authors, p.journal].filter(Boolean).join(' · ')}</div>
             </div>`;
         li.onclick = () => openPubDetail(i);
         ul.appendChild(li);
@@ -1300,8 +1302,13 @@ function openPubDetail(i) {
     const doi = p.doi
         ? `<a href="${p.doi}" target="_blank" rel="noopener">DOI ↗</a>`
         : '';
+    const arxiv = p.arxiv
+        ? `<a href="https://arxiv.org/abs/${p.arxiv}" target="_blank" rel="noopener">arXiv:${p.arxiv} ↗</a>`
+        : '';
+    const links = [doi, arxiv].filter(Boolean).join(' &thinsp;·&thinsp; ');
+    const journalLine = [p.journal, p.volume].filter(Boolean).join(', ');
     document.getElementById('pub-d-meta').innerHTML =
-        `${p.authors || ''}<br>${p.journal || ''}${p.volume ? ', ' + p.volume : ''}<br>${doi}`;
+        `${p.authors || ''}${journalLine ? '<br>' + journalLine : ''}${links ? '<br>' + links : ''}`;
     const absEl = document.getElementById('pub-d-abstract');
     absEl.textContent = p.abstract || '';
     renderMath(absEl);

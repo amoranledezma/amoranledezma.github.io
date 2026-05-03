@@ -12,7 +12,8 @@
       "year": 2026,
       "title": "Spectral Geometry and Heat Kernels on Phylogenetic Trees",
       "authors": "Á. Morán Ledezma",
-      "status": "submitted"
+      "status": "submitted",
+      "abstract": "We develop a unified spectral framework for finite ultrametric phylogenetic trees, grounding the analysis of phylogenetic structure in operator theory and stochastic dynamics. For a given finite ultrametric measure space $(X,d,m)$, we introduce the ultrametric Laplacian $L_X$ as the generator of a continuous-time Markov chain with transition rate $q(x,y)=k(d(x,y))m(y)$. We establish its complete spectral theory, obtaining explicit closed-form eigenvalues and an eigenbasis supported on the clades of the tree. We associate to any ultrametric phylogenetic tree $T$ a canonical operator $L_T$, the ultrametric phylogenetic Laplacian, whose jump rates encode the temporal structure of evolutionary divergence. The geometry and topology of the tree are explicitly encoded in the spectrum and eigenvectors of $L_T$: eigenvalues aggregate branch lengths weighted by clade mass along ancestral paths, while eigenvectors are supported on the clades, with one eigenspace attached to each internal node. From this we derive a spectral reconstruction theorem with linear complexity $O(|X|)$; a geometric interpretation of the spectral gaps of $L_T$ as detectors of distinct evolutionary modes, validated on an empirical primate phylogeny; an eigenmode decomposition of biological traits that resolves trait variance into contributions from individual splits; and a closed-form centrality index for continuous-time Markov chains on ultrametric spaces as a mathematically grounded measure of evolutionary distinctiveness."
     },
     {
       "id": "time-varying-energy-landscapes",
@@ -22,7 +23,8 @@
       "status": "published",
       "journal": "Journal of Statistical Mechanics: Theory and Experiment",
       "volume": "Vol. 2025, 113501",
-      "doi": "https://doi.org/10.1088/1742-5468/ae120f"
+      "doi": "https://doi.org/10.1088/1742-5468/ae120f",
+      "abstract": "We study the dynamics of complex systems with time-dependent transition rates, focusing on $p$-adic analysis in modeling such systems. Starting from the master equation governing the stochastic dynamics of a system with a large number of interacting components, we generalize it by $p$-adically parametrizing the metabasins to account for states organized in a fractal and hierarchical manner within the energy landscape. This leads to a time-inhomogeneous Markov process described by a time-dependent operator acting on an ultrametric space. We prove well-posedness of the initial value problem and analyze the stochastic nature of the master equation with time-dependent transition operator. We apply our framework to two scenarios: glass relaxation under rapid cooling, where we observe anomalous relaxation behavior with lasting effects depending on the temperature drop; and protein folding dynamics influenced by temperature variations, where we capture a whiplash effect from an unfolded state through folding and back. This demonstrates the effectiveness of $p$-adic parametrization and ultrametric analysis in modeling complex systems with dynamic transition rates, providing analytical solutions that improve our understanding of relaxation processes in material and biological systems."
     },
     {
       "id": "nonautonomous-padic-diffusion",
@@ -32,7 +34,8 @@
       "status": "published",
       "journal": "Reports on Mathematical Physics",
       "volume": "Vol. 95, Issue 2, pp. 155-180",
-      "doi": "https://doi.org/10.1016/S0034-4877(25)00023-0"
+      "doi": "https://doi.org/10.1016/S0034-4877(25)00023-0",
+      "abstract": "Motivated by the recently proven presence of ultrametricity in physical models such as certain spin glasses, and by the study of Turing patterns in time-changing networks, we study nonautonomous diffusion operators on systems where finitely many compact $p$-adic spaces are joined by a graph structure, including their Dirichlet and von Neumann eigenvalues. The Cauchy problem for the heat equation associated with these operators is solved, its solution approximated by Trotter products, and the corresponding Feller property as well as the Markov property (a Hunt process) is established."
     },
     {
       "id": "hearing-serre-invariant",
@@ -40,7 +43,8 @@
       "title": "Hearing the Serre Invariant of a Compact p-Adic Analytic Manifold",
       "authors": "P. E. Bradley, Á. Morán Ledezma",
       "status": "submitted",
-      "arxiv": "2511.20631"
+      "arxiv": "2511.20631",
+      "abstract": "Using a novel way of defining kernel functions for Laplacian integral operators on a compact $p$-adic analytic manifold $X$, one such operator $\\Delta_0^s$ with $s\\in\\mathbb{R}$ is applied to hearing the Serre invariant $i(X)$ by showing that a wavelet eigenvalue is always congruent to $i(X)$ modulo $q-1$, where $q$ is the cardinality of the residue field $k$ attached to a $p$-adic number field $K$. It is shown how the number of $k$-rational points of the special fibre of the Néron model of an elliptic curve defined over $K$ relates to the wavelet spectrum of $\\Delta_0^s$, leading to the realisation that the Serre invariant $i(E(X))$ in the case of an elliptic curve $E$ with split multiplicative reduction vanishes modulo $q-1$."
     },
     {
       "id": "hearing-shapes-padic",
@@ -50,10 +54,160 @@
       "status": "published",
       "journal": "Journal of Mathematical Physics",
       "volume": "Vol. 64, No. 11, 113502",
-      "doi": "https://doi.org/10.1063/5.0152374"
+      "doi": "https://doi.org/10.1063/5.0152374",
+      "abstract": "For a finite graph, a spectral curve is constructed as the zero set of a two-variate polynomial with integer coefficients coming from $p$-adic diffusion on the graph. It is shown that certain spectral curves can distinguish non-isomorphic pairs of isospectral graphs, and can even reconstruct the graph. This allows graph reconstruction from the spectrum of the associated $p$-adic Laplacian operator. As an application to $p$-adic geometry, it is shown that the reduction graph of a Mumford curve and the product reduction graph of a $p$-adic analytic torus can be recovered from the spectrum of such operators."
     }
   ],
   "essays": [],
   "outreach": [],
-  "photos": []
+  "photos": [
+    {
+      "src": "content/photography/20251205_232802.jpg",
+      "name": "20251205_232802"
+    },
+    {
+      "src": "content/photography/dscf0292.jpg",
+      "name": "dscf0292"
+    },
+    {
+      "src": "content/photography/dscf0348.jpg",
+      "name": "dscf0348"
+    },
+    {
+      "src": "content/photography/dscf0627.jpg",
+      "name": "dscf0627"
+    },
+    {
+      "src": "content/photography/dscf0672.jpg",
+      "name": "dscf0672"
+    },
+    {
+      "src": "content/photography/dscf0677.jpg",
+      "name": "dscf0677"
+    },
+    {
+      "src": "content/photography/dscf0747.jpg",
+      "name": "dscf0747"
+    },
+    {
+      "src": "content/photography/dscf0866.jpg",
+      "name": "dscf0866"
+    },
+    {
+      "src": "content/photography/dscf1071.jpg",
+      "name": "dscf1071"
+    },
+    {
+      "src": "content/photography/dscf1079.jpg",
+      "name": "dscf1079"
+    },
+    {
+      "src": "content/photography/dscf1342.jpg",
+      "name": "dscf1342"
+    },
+    {
+      "src": "content/photography/dscf1356.jpg",
+      "name": "dscf1356"
+    },
+    {
+      "src": "content/photography/dscf1548.jpg",
+      "name": "dscf1548"
+    },
+    {
+      "src": "content/photography/dscf1821.jpg",
+      "name": "dscf1821"
+    },
+    {
+      "src": "content/photography/dscf2332.jpg",
+      "name": "dscf2332"
+    },
+    {
+      "src": "content/photography/dscf2383.jpg",
+      "name": "dscf2383"
+    },
+    {
+      "src": "content/photography/dscf2572.jpg",
+      "name": "dscf2572"
+    },
+    {
+      "src": "content/photography/dscf2934.jpg",
+      "name": "dscf2934"
+    },
+    {
+      "src": "content/photography/dscf2937.jpg",
+      "name": "dscf2937"
+    },
+    {
+      "src": "content/photography/dscf2980.jpg",
+      "name": "dscf2980"
+    },
+    {
+      "src": "content/photography/dscf5233.jpg",
+      "name": "dscf5233"
+    },
+    {
+      "src": "content/photography/dscf6013.jpg",
+      "name": "dscf6013"
+    },
+    {
+      "src": "content/photography/dscf6362.jpg",
+      "name": "dscf6362"
+    },
+    {
+      "src": "content/photography/dscf6606.jpg",
+      "name": "dscf6606"
+    },
+    {
+      "src": "content/photography/dscf6964.jpg",
+      "name": "dscf6964"
+    },
+    {
+      "src": "content/photography/dscf7546.jpg",
+      "name": "dscf7546"
+    },
+    {
+      "src": "content/photography/dscf7555.jpg",
+      "name": "dscf7555"
+    },
+    {
+      "src": "content/photography/dscf7597.jpg",
+      "name": "dscf7597"
+    },
+    {
+      "src": "content/photography/dscf7763.jpg",
+      "name": "dscf7763"
+    },
+    {
+      "src": "content/photography/dscf7769.jpg",
+      "name": "dscf7769"
+    },
+    {
+      "src": "content/photography/dscf7872.jpg",
+      "name": "dscf7872"
+    },
+    {
+      "src": "content/photography/dscf7939.jpg",
+      "name": "dscf7939"
+    },
+    {
+      "src": "content/photography/dscf8136.jpg",
+      "name": "dscf8136"
+    },
+    {
+      "src": "content/photography/dscf8199.jpg",
+      "name": "dscf8199"
+    },
+    {
+      "src": "content/photography/dscf8785.jpg",
+      "name": "dscf8785"
+    },
+    {
+      "src": "content/photography/dscf9108.jpg",
+      "name": "dscf9108"
+    },
+    {
+      "src": "content/photography/dscf9782.jpg",
+      "name": "dscf9782"
+    }
+  ]
 }

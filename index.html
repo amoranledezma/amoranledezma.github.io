@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ángel Morán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<!-- KaTeX for math rendering ($...$ inline, $$...$$ display) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="katexReady = true; tryRenderMath();"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:       #EDEFE2; --ink:    #1F2418; --accent: #6B7050;
+    --muted:    #7C8068; --line:   #D8DCC9;
+    --photo-bg: #DDE0CC; --body-txt:#2A2E22;
+    --paper:    rgba(237,239,226,0.94);
+}
+body.dark {
+    --bg:       #1A1F15; --ink:    #E4DDD2; --accent: #A8A065;
+    --muted:    #807A65; --line:   #2C3024;
+    --photo-bg: #1F2419; --body-txt:#C0B8A0;
+    --paper:    rgba(26,31,21,0.92);
+}
+
+html, body { height:100%; width:100%; overflow:hidden; transition:background .6s,color .6s; }
+body { background:var(--bg); color:var(--ink); font-family:'EB Garamond',Georgia,serif; }
+
+/* ── MATRIX BG canvas (fixed, behind everything) ── */
+#matrix-bg {
+    position:fixed; inset:0; z-index:0;
+    pointer-events:none;
+    filter: blur(0.5px);
+    opacity: 0.7;
+    transition: opacity .8s;
+}
+body.dark #matrix-bg { opacity: 0.6; }
+
+/* Soft vignette over matrix */
+#matrix-veil {
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background: radial-gradient(ellipse 70% 60% at center 55%, transparent 0%, transparent 35%, var(--bg) 95%);
+    transition: background .6s;
+}
+
+/* All actual content sits above */
+#home, .section-view, #mode-toggle, #lang-toggle, #lightbox, #zoom-overlay { z-index: 10; }
+
+/* ── MODE TOGGLE ── */
+#mode-toggle {
+    position:fixed; top:1.1rem; right:1.5rem; z-index:300;
+    background:none; border:none; cursor:pointer;
+    width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); transition:color .3s,transform .4s; border-radius:50%;
+}
+#mode-toggle:hover { color:var(--ink); transform:rotate(20deg) scale(1.15); }
+#mode-toggle svg { width:20px; height:20px; }
+.icon-moon { display:block; } .icon-sun { display:none; }
+body.dark .icon-moon { display:none; } body.dark .icon-sun { display:block; }
+
+/* ── LANG TOGGLE ── */
+#lang-toggle {
+    position:fixed; top:1.1rem; right:4.2rem; z-index:300;
+    background:none; border:1px solid var(--line); cursor:pointer;
+    width:auto; height:36px; padding:0 .8rem; border-radius:18px;
+    color:var(--muted); transition: color .3s, border-color .3s, background .3s;
+    font-family:'EB Garamond',serif; font-size:.78rem; letter-spacing:.18em;
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:.45rem;
+}
+#lang-toggle:hover { color:var(--ink); border-color:var(--accent); }
+#lang-toggle .lang-cur { color:var(--ink); font-weight:500; }
+#lang-toggle .lang-sep { opacity:.4; }
+
+/* ── HOME ── */
+#home {
+    position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+    transition:opacity .8s ease,transform .8s ease;
+}
+#home.hidden { opacity:0; pointer-events:none; transform:scale(.98); }
+.name-header {
+    padding-top:2.4rem; text-align:center; user-select:none;
+    opacity:0; transform: translateY(-8px);
+    animation: fadeDown 1.6s .3s ease both;
+}
+@keyframes fadeDown { to { opacity:1; transform:translateY(0); } }
+.name-header h1 {
+    font-family:'Cormorant Garamond',serif; font-weight:300;
+    font-size:clamp(2.2rem,5vw,3.6rem); letter-spacing:.10em; color:var(--ink); transition:color .5s;
+}
+.name-header .ornament {
+    display:flex; align-items:center; justify-content:center; gap:1rem; margin-top:.4rem;
+}
+.name-header .ornament .line { width:60px; height:1px; background:var(--accent); opacity:.6; }
+.name-header .ornament .dot  { width:4px; height:4px; border-radius:50%; background:var(--accent); opacity:.8; }
+.name-header p {
+    font-style:italic; font-size:.9rem; color:var(--muted); letter-spacing:.18em; margin-top:.6rem;
+    transition:color .5s;
+}
+#tree-canvas { flex:1; min-height:0; display:block; cursor:default; max-width:1200px; width:100%; }
+
+/* ── ZOOM-TO-LEAF OVERLAY ── */
+#zoom-overlay {
+    position:fixed; inset:0; pointer-events:none;
+    background: radial-gradient(circle at var(--zx,50%) var(--zy,50%), transparent 0%, var(--bg) 60%);
+    opacity:0; transition: opacity .9s ease;
+}
+#zoom-overlay.active { opacity:1; }
+
+/* ── SECTIONS ── */
+.section-view {
+    position:fixed; inset:0; overflow-y:auto;
+    opacity:0; pointer-events:none;
+    transition:opacity .7s ease,background .5s;
+    padding:3.5rem clamp(1.5rem,8vw,8rem) 5rem;
+    background:var(--paper);
+    backdrop-filter: blur(6px);
+}
+.section-view.active { opacity:1; pointer-events:all; }
+
+/* decorative leaf at section header */
+.section-leaf {
+    width:64px; height:64px; opacity:.35;
+    margin-bottom:1.4rem; transition: opacity .5s;
+}
+body.dark .section-leaf { opacity:.5; }
+
+/* nav buttons */
+.nav-row { display:flex; align-items:center; gap:1.5rem; margin-bottom:2.8rem; }
+.back-btn {
+    background:none; border:none; cursor:pointer;
+    display:inline-flex; align-items:center; gap:.5rem;
+    font-family:'EB Garamond',serif; font-size:.88rem; color:var(--muted);
+    letter-spacing:.12em; text-transform:uppercase; padding:0; transition:color .2s;
+}
+.back-btn:hover { color:var(--ink); }
+.back-btn svg { width:15px; height:15px; }
+.sep { color:var(--line); font-size:.9rem; }
+
+/* section header */
+.section-eyebrow {
+    font-family:'EB Garamond',serif; font-style:italic;
+    color:var(--accent); font-size:.82rem; letter-spacing:.25em;
+    text-transform:uppercase; margin-bottom:1rem;
+}
+.section-title {
+    font-family:'Cormorant Garamond',serif; font-weight:300;
+    font-size:clamp(2.8rem,7vw,5rem); letter-spacing:.02em;
+    line-height:1.05; margin-bottom:.8rem; transition:color .5s;
+}
+.section-subtitle {
+    font-style:italic; color:var(--muted); font-size:1.05rem;
+    margin-bottom:2.6rem; max-width: 540px; line-height:1.6;
+    transition:color .5s;
+}
+.divider {
+    width:42px; height:1px; background:var(--accent); margin-bottom:3rem;
+    transition:background .5s;
+}
+
+/* inner views */
+.inner-list   { display:block; }
+.inner-detail { display:none; }
+.inner-list.hidden    { display:none; }
+.inner-detail.visible { display:block; }
+
+/* ── STATUS BADGES ── */
+.chron-row-top { display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; margin-bottom:.35rem; }
+.status-pill {
+    display:inline-block;
+    font-family:'EB Garamond',serif; font-size:.7rem;
+    letter-spacing:.1em; text-transform:lowercase;
+    padding:.2rem .65rem; border-radius:999px;
+    border:1px solid currentColor;
+    background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.status-published { color:#6FA85E; }
+.status-accepted  { color:#C9A24A; }
+.status-preprint  { color:#8DA0BC; }
+.status-review    { color:#B8866A; }
+body.dark .status-published { color:#9CCB7A; }
+body.dark .status-accepted  { color:#E1C175; }
+body.dark .status-preprint  { color:#B0C4DD; }
+body.dark .status-review    { color:#D6A285; }
+
+.chron-list { list-style:none; max-width:780px; }
+.chron-item {
+    display:grid; grid-template-columns: 4rem 1fr; gap:1.6rem; align-items:baseline;
+    padding:1.4rem 0; border-bottom:1px solid var(--line);
+    cursor:pointer; transition:border-color .5s, padding-left .25s;
+}
+.chron-item:last-child { border-bottom:none; }
+.chron-item:hover { padding-left:.5rem; }
+.chron-item:hover .chron-title { color:var(--accent); }
+.chron-year { font-size:.82rem; color:var(--muted); font-style:italic; letter-spacing:.05em; }
+.chron-title {
+    font-family:'Cormorant Garamond',serif; font-size:1.32rem; font-weight:400;
+    color:var(--ink); transition:color .25s; line-height:1.3;
+}
+.chron-meta { font-size:.85rem; color:var(--muted); margin-top:.35rem; font-style:italic; }
+
+/* ── DETAIL VIEW ── */
+.detail-title {
+    font-family:'Cormorant Garamond',serif; font-weight:300;
+    font-size:clamp(2rem,4.5vw,3.2rem); line-height:1.15; margin-bottom:.6rem; max-width:780px;
+}
+.detail-meta {
+    font-size:.92rem; color:var(--muted); font-style:italic;
+    letter-spacing:.04em; margin-bottom:2.8rem; line-height:1.8;
+}
+.detail-meta a { color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition: border-color .2s; }
+.detail-meta a:hover { border-color:var(--accent); }
+.detail-body {
+    max-width:680px; font-size:1.12rem; line-height:1.95; color:var(--body-txt); transition:color .5s;
+}
+.detail-body p { margin-bottom:1.5rem; }
+.detail-body h2, .detail-body h3, .detail-body h4 {
+    font-family:'Cormorant Garamond',serif; font-weight:400;
+    margin-bottom:1rem; margin-top:2rem; color:var(--ink);
+}
+.detail-body ul, .detail-body ol { padding-left:1.5rem; margin-bottom:1.5rem; }
+.detail-body li { margin-bottom:.5rem; }
+.detail-body a { color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition: border-color .2s; }
+.detail-body a:hover { border-color:var(--accent); }
+.detail-body strong { color:var(--ink); font-weight:500; }
+
+/* drop cap on first paragraph for essays */
+.essay-body > p:first-of-type::first-letter {
+    font-family:'Cormorant Garamond',serif; font-weight:400;
+    font-size:4.4rem; float:left; line-height:.85;
+    padding:.4rem .6rem .1rem 0; color:var(--accent);
+}
+
+.detail-label {
+    font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:1.2rem; display:block;
+}
+
+/* poem styling */
+.poem-body { white-space:pre-line; line-height:2.2; font-size:1.18rem; }
+.poem-body p { margin-bottom:2rem; }
+
+/* ── PROFILE ── */
+#profile-body { max-width:680px; }
+#profile-body p { font-size:1.12rem; line-height:1.95; margin-bottom:1.5rem; color:var(--body-txt); }
+#profile-body h2 { font-family:'Cormorant Garamond',serif; font-weight:300; font-size:2rem;
+    margin:2.5rem 0 1rem; color:var(--ink); letter-spacing:.04em; }
+#profile-body ul { list-style:none; padding:0; }
+#profile-body li { font-size:1.05rem; line-height:2; color:var(--body-txt); }
+#profile-body a { color:var(--accent); text-decoration:none; border-bottom:1px solid transparent; transition: border-color .2s; }
+#profile-body a:hover { border-color:var(--accent); }
+.cv-link {
+    display:inline-flex; align-items:center; gap:.5rem;
+    margin-top:2rem;
+    font-family:'EB Garamond',serif; font-size:.85rem;
+    letter-spacing:.15em; text-transform:uppercase;
+    color:var(--accent); text-decoration:none;
+    border:1px solid var(--accent); border-radius:2px;
+    padding:.5rem 1.2rem; transition: background .2s, color .2s;
+}
+.cv-link:hover { background:var(--accent); color:var(--bg); }
+
+/* ── PHOTOGRAPHY ── */
+.photo-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+    gap:1.4rem; margin-top:1rem;
+}
+.photo-cell {
+    aspect-ratio:4/3; background:var(--photo-bg); border-radius:2px; overflow:hidden;
+    cursor:pointer; transition:background .5s,transform .35s,opacity .35s;
+    position:relative;
+}
+.photo-cell:hover { transform:scale(1.02); opacity:.92; }
+.photo-cell img { width:100%; height:100%; object-fit:cover; display:block; }
+.photo-cell.placeholder {
+    display:flex; align-items:center; justify-content:center;
+    color:var(--muted); font-style:italic; font-size:.85rem;
+}
+.photo-empty {
+    text-align:center; font-style:italic; color:var(--muted); margin-top:3rem; font-size:1rem;
+}
+
+/* ── LIGHTBOX ── */
+#lightbox {
+    position:fixed; inset:0; z-index:500;
+    background:rgba(0,0,0,.94);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem;
+    opacity:0; pointer-events:none; transition:opacity .3s;
+}
+#lightbox.active { opacity:1; pointer-events:all; }
+#lightbox img { max-width:90vw; max-height:80vh; object-fit:contain; border-radius:2px; }
+#lightbox-caption { font-style:italic; font-size:.95rem; color:rgba(255,255,255,.65); }
+#lightbox-close {
+    position:fixed; top:1.2rem; right:1.5rem;
+    background:none; border:none; cursor:pointer;
+    color:rgba(255,255,255,.55); font-size:2rem; line-height:1;
+    transition:color .2s;
+}
+#lightbox-close:hover { color:#fff; }
+
+/* ── MISC ── */
+.note {
+    font-style:italic; color:var(--muted); font-size:.95rem;
+    border-left:2px solid var(--accent); padding-left:1.2rem; margin-top:2.5rem; line-height:1.7;
+}
+code { font-family:monospace; font-size:.88em; background: var(--line); padding: .1em .3em; border-radius: 2px; }
+.katex-display { overflow-x:auto; overflow-y:hidden; padding:.5rem 0; }
+
+/* KaTeX dark mode: keep it readable */
+body.dark .katex { color: var(--body-txt); }
+</style>
+</head>
+<body class="dark">
+
+<!-- ══ MATRIX BACKGROUND ══ -->
+<canvas id="matrix-bg"></canvas>
+<div id="matrix-veil"></div>
+
+<!-- ══ LANG TOGGLE ══ -->
+<button id="lang-toggle" onclick="toggleLang()" title="Switch language">
+    <span class="lang-cur" id="lang-current">EN</span>
+    <span class="lang-sep">/</span>
+    <span id="lang-other">ES</span>
+</button>
+
+<!-- ══ MODE TOGGLE ══ -->
+<button id="mode-toggle" onclick="toggleMode()" title="Night / day mode" data-i18n-title="mode.toggle">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+    </svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4"/>
+        <line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/>
+        <line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/>
+        <line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/>
+    </svg>
+</button>
+
+<!-- ══ ZOOM-TO-LEAF OVERLAY ══ -->
+<div id="zoom-overlay"></div>
+
+<!-- ══ LIGHTBOX ══ -->
+<div id="lightbox" onclick="closeLightbox()">
+    <button id="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img id="lightbox-img" alt="">
+    <div id="lightbox-caption"></div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div id="home">
+    <header class="name-header">
+        <h1>Ángel Morán</h1>
+        <div class="ornament">
+            <span class="line"></span><span class="dot"></span><span class="line"></span>
+        </div>
+        <p data-i18n="hero.hint">touch a leaf to explore</p>
+    </header>
+    <canvas id="tree-canvas"></canvas>
+</div>
+
+<!-- ══ SECTION: PROFILE ══ -->
+<div class="section-view" id="section-profile">
+    <div class="nav-row">
+        <button class="back-btn" onclick="goHome()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            <span data-i18n="nav.back">back to the tree</span>
+        </button>
+    </div>
+    <svg class="section-leaf" viewBox="0 0 64 64" data-leaf-deco></svg>
+    <p class="section-eyebrow" data-i18n="profile.eyebrow">about me</p>
+    <h2 class="section-title" data-i18n="profile.title">Profile</h2>
+    <p class="section-subtitle" data-i18n="profile.subtitle">Mathematician, writer, a curious mind between rigour and intuition.</p>
+    <div class="divider"></div>
+    <div id="profile-body">
+        <p class="note">Loading profile…</p>
+    </div>
+    <div id="profile-cv-row"></div>
+</div>
+
+<!-- ══ SECTION: PUBLICATIONS ══ -->
+<div class="section-view" id="section-publications">
+    <div class="inner-list" id="pub-list-view">
+        <div class="nav-row">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                <span data-i18n="nav.back">back to the tree</span>
+            </button>
+        </div>
+        <svg class="section-leaf" viewBox="0 0 64 64" data-leaf-deco></svg>
+        <p class="section-eyebrow" data-i18n="pub.eyebrow">academic work</p>
+        <h2 class="section-title" data-i18n="pub.title">Publications</h2>
+        <p class="section-subtitle" data-i18n="pub.subtitle">Academic research in ultrametric analysis.</p>
+        <div class="divider"></div>
+        <ul class="chron-list" id="pub-chron-list"></ul>
+    </div>
+    <div class="inner-detail" id="pub-detail-view">
+        <div class="nav-row">
+            <button class="back-btn" onclick="closePubDetail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                <span data-i18n="nav.publications">publications</span>
+            </button>
+            <span class="sep">·</span>
+            <button class="back-btn" onclick="goHome()"><span data-i18n="nav.tree">tree</span></button>
+        </div>
+        <span class="detail-label" data-i18n="label.publication">Publication</span>
+        <h3 class="detail-title" id="pub-d-title"></h3>
+        <div class="detail-meta" id="pub-d-meta"></div>
+        <div class="detail-body">
+            <span class="detail-label" data-i18n="label.abstract">Abstract</span>
+            <p id="pub-d-abstract"></p>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SECTION: DIVULGACIÓN / OUTREACH ══ -->
+<div class="section-view" id="section-divulgation">
+    <div class="inner-list" id="div-list-view">
+        <div class="nav-row">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                <span data-i18n="nav.back">back to the tree</span>
+            </button>
+        </div>
+        <svg class="section-leaf" viewBox="0 0 64 64" data-leaf-deco></svg>
+        <p class="section-eyebrow" data-i18n="div.eyebrow">ciencia para todos</p>
+        <h2 class="section-title" data-i18n="div.title">Divulgación</h2>
+        <p class="section-subtitle" data-i18n="div.subtitle">La misma matemática contada sin ecuaciones.</p>
+        <div class="divider"></div>
+        <ul class="chron-list" id="div-chron-list"></ul>
+    </div>
+    <div class="inner-detail" id="div-detail-view">
+        <div class="nav-row">
+            <button class="back-btn" onclick="closeDivDetail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                <span data-i18n="nav.outreach">divulgación</span>
+            </button>
+            <span class="sep">·</span>
+            <button class="back-btn" onclick="goHome()"><span data-i18n="nav.tree">tree</span></button>
+        </div>
+        <span class="detail-label" data-i18n="label.outreach">Divulgación</span>
+        <h3 class="detail-title" id="div-d-title"></h3>
+        <div class="detail-meta" id="div-d-meta"></div>
+        <div class="detail-body essay-body" id="div-d-body"></div>
+    </div>
+</div>
+
+<!-- ══ SECTION: PHOTOGRAPHY ══ -->
+<div class="section-view" id="section-photography">
+    <div class="nav-row">
+        <button class="back-btn" onclick="goHome()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            <span data-i18n="nav.back">back to the tree</span>
+        </button>
+    </div>
+    <svg class="section-leaf" viewBox="0 0 64 64" data-leaf-deco></svg>
+    <p class="section-eyebrow" data-i18n="photo.eyebrow">images</p>
+    <h2 class="section-title" data-i18n="photo.title">Photography</h2>
+    <p class="section-subtitle" data-i18n="photo.subtitle">Images from the field, the mountains, and the places where thought rests.</p>
+    <div class="divider"></div>
+    <div class="photo-grid" id="photo-grid"></div>
+</div>
+
+<!-- ══ SECTION: ESSAYS & POEMS ══ -->
+<div class="section-view" id="section-essays">
+    <div class="inner-list" id="essay-list-view">
+        <div class="nav-row">
+            <button class="back-btn" onclick="goHome()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                <span data-i18n="nav.back">back to the tree</span>
+            </button>
+        </div>
+        <svg class="section-leaf" viewBox="0 0 64 64" data-leaf-deco></svg>
+        <p class="section-eyebrow" data-i18n="essays.eyebrow">writing</p>
+        <h2 class="section-title" data-i18n="essays.title">Essays &amp; Poems</h2>
+        <p class="section-subtitle" data-i18n="essays.subtitle">Thought and language at the edge of form.</p>
+        <div class="divider"></div>
+        <ul class="chron-list" id="essay-chron-list"></ul>
+    </div>
+    <div class="inner-detail" id="essay-detail-view">
+        <div class="nav-row">
+            <button class="back-btn" onclick="closeEssayDetail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                <span data-i18n="nav.essays">essays &amp; poems</span>
+            </button>
+            <span class="sep">·</span>
+            <button class="back-btn" onclick="goHome()"><span data-i18n="nav.tree">tree</span></button>
+        </div>
+        <span class="detail-label" id="essay-d-label"></span>
+        <h3 class="detail-title" id="essay-d-title"></h3>
+        <div class="detail-meta" id="essay-d-meta"></div>
+        <div id="essay-d-body-wrap"></div>
+    </div>
+</div>
+
+<!-- ══ DECORATIVE LEAF SVG ══ -->
+<script>
+function drawDecoLeaf(svg) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', `
+        M 32 60 C 30 50 28 38 30 26 C 31 18 33 12 36 6
+        M 30 48 C 24 46 20 44 16 40
+        M 30 42 C 24 40 20 38 16 32
+        M 31 36 C 25 34 21 32 18 26
+        M 32 30 C 26 28 22 26 20 20
+        M 33 24 C 29 22 26 20 24 16
+        M 30 50 C 36 48 40 46 44 42
+        M 30 44 C 36 42 40 40 44 34
+        M 31 38 C 37 36 41 34 44 28
+        M 32 32 C 38 30 42 28 44 22
+        M 33 26 C 37 24 40 22 42 18
+    `);
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.4');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('opacity', '0.9');
+    svg.style.color = 'var(--accent)';
+    svg.appendChild(path);
+}
+document.querySelectorAll('[data-leaf-deco]').forEach(drawDecoLeaf);
+</script>
+
+<!-- ══ MATRIX BACKGROUND ENGINE ══ -->
+<script>
+(function () {
+  const canvas = document.getElementById('matrix-bg');
+  const ctx = canvas.getContext('2d');
+  let isDark = true;
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  const TOKENS = [
+    'd(x,z) ≤ max{d(x,y), d(y,z)}',
+    '∀ε>0  ∃δ>0',
+    'lim ‖xₙ − x‖ → 0',
+    '∮ B·dl = μ₀I',
+    'ζ(s) = Σ 1/nˢ',
+    '∂u/∂t = κ∇²u',
+    'p-adic |x|ₚ',
+    'eʱᴼʱ + 1 = 0',
+    '𝒪(log n)',
+    'Banach contraction',
+    'fixed point: f(x) = x',
+    'ultrametric',
+    'isosceles always',
+    'open ⇔ closed',
+    'not the dimension',
+    'but the structure',
+    'branching',
+    '« to measure is to decide »',
+    'tree ≅ ultrametric',
+    '∃! fixed point',
+    'spherically complete',
+    '∑ aₙxⁿ',
+    'Hausdorff dim',
+    'the kin precedes',
+    'the distance',
+    'silence is form',
+    'hierarchical cluster',
+    'non-Archimedean',
+    '|x+y|ₚ ≤ max(|x|ₚ,|y|ₚ)',
+    'to converge is to repeat',
+    '∇²ψ = 0',
+    'Cauchy ⇔ convergent',
+    'dendrogram',
+    'self-similarity',
+    '∀x ∈ X',
+    'φ : X → Y',
+    'compactness',
+  ];
+
+  let columns = [];
+  let cols = 0;
+  let colW = 0;
+  let lastTime = 0;
+  let W = 0, H = 0;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    colW = 150;
+    cols = Math.ceil(W / colW);
+    columns = [];
+    for (let i = 0; i < cols; i++) columns.push(makeColumn(i, true));
+  }
+
+  function makeColumn(i, seedFull) {
+    const speed = 22 + Math.random() * 32;
+    const c = {
+      x: i * colW + colW * (0.2 + Math.random() * 0.6),
+      y: seedFull ? (Math.random() * (H + 200) - 100) : (-40 - Math.random() * 200),
+      speed,
+      tokenIdx: Math.floor(Math.random() * TOKENS.length),
+      fontSize: 11 + Math.random() * 6,
+      alpha: 0.20 + Math.random() * 0.22,
+      gap: 60 + Math.random() * 120,
+      rot: (Math.random() - 0.5) * 0.04,
+      trail: [],
+      lastEmit: 0,
+    };
+    if (seedFull) {
+      const numTrail = 3 + Math.floor(Math.random() * 4);
+      let yy = c.y;
+      for (let k = 0; k < numTrail; k++) {
+        yy -= c.gap;
+        c.trail.push({ y: yy, age: k * 1500, tokenIdx: (c.tokenIdx + k + 1) % TOKENS.length });
+      }
+    }
+    return c;
+  }
+
+  function update(dt) {
+    for (const c of columns) {
+      c.y += c.speed * dt / 1000;
+      c.lastEmit += dt;
+      if (c.lastEmit > c.gap * 30) {
+        c.trail.unshift({ y: c.y, age: 0, tokenIdx: c.tokenIdx });
+        c.tokenIdx = (c.tokenIdx + 1 + Math.floor(Math.random() * 3)) % TOKENS.length;
+        c.lastEmit = 0;
+      }
+      for (let i = c.trail.length - 1; i >= 0; i--) {
+        c.trail[i].age += dt;
+        if (c.trail[i].age > 12000) c.trail.splice(i, 1);
+      }
+      if (c.y > H + 100) {
+        c.y = -100 - Math.random() * 200;
+        c.trail = [];
+        c.speed = 22 + Math.random() * 32;
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.scale(dpr, dpr);
+    const inkColor = isDark ? '255,240,210' : '40,30,20';
+    const headColor = isDark ? '200,230,170' : '90,120,70';
+    ctx.font = `12px 'EB Garamond', serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const c of columns) {
+      ctx.save();
+      ctx.translate(c.x, 0);
+      ctx.rotate(c.rot);
+      for (const t of c.trail) {
+        const fade = Math.max(0, 1 - t.age / 12000);
+        const a = c.alpha * fade * 0.55;
+        if (a < 0.005) continue;
+        ctx.globalAlpha = a;
+        ctx.fillStyle = `rgba(${inkColor},1)`;
+        ctx.font = `${c.fontSize}px 'EB Garamond', serif`;
+        ctx.fillText(TOKENS[t.tokenIdx], 0, t.y);
+      }
+      ctx.globalAlpha = c.alpha * 1.0;
+      ctx.fillStyle = `rgba(${headColor},0.65)`;
+      ctx.font = `italic ${c.fontSize}px 'EB Garamond', serif`;
+      ctx.fillText(TOKENS[c.tokenIdx], 0, c.y);
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  function loop(now) {
+    if (!lastTime) lastTime = now;
+    const dt = Math.min(80, now - lastTime);
+    lastTime = now;
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  window.MatrixBG = {
+    init() {
+      resize();
+      window.addEventListener('resize', resize);
+      requestAnimationFrame(loop);
+    },
+    setDark(v) { isDark = v; },
+  };
+})();
+</script>
+
+<!-- ══ TREE ENGINE ══ -->
+<script>
+(function () {
+  const VW = 1000, VH = 620;
+  const mainCanvas = document.getElementById('tree-canvas');
+  const mainCtx = mainCanvas.getContext('2d');
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let VS = 1;
+  let isDark = true;
+  let growthT = 0;
+  let growthStartTime = 0;
+  let growthDone = false;
+  let particles = [];
+  let leafShake = new Map();
+  let mouseX = -1, mouseY = -1;
+  let hoveredLeaf = null;
+
+  const THEMES = {
+    dark: {
+      bg: '#1A1F15', bark: '#3D2C1A', barkMid: '#5C4226', barkLight: '#8A6A42',
+      barkDark: '#241810', branch: '#4A3520', twig: '#5A3F26',
+      leafCore: '#B5E89A', leafEdge: '#5E8A3E', leafFill: 'rgba(140,210,100,0.45)',
+      glow: 'rgba(180,255,140,0.20)', particle: 'rgba(220,255,180,0.75)',
+      label: '#E4DDD2', labelHov: '#C8F0A0', hint: '#A89F90',
+    },
+    light: {
+      bg: '#EDEFE2', bark: '#3A2618', barkMid: '#5A3D24', barkLight: '#8A6A42',
+      barkDark: '#1F140A', branch: '#4D3624', twig: '#5A3D26',
+      leafCore: '#3E6A28', leafEdge: '#6B9050', leafFill: 'rgba(80,130,55,0.40)',
+      glow: 'rgba(120,180,80,0.18)', particle: 'rgba(80,120,60,0.55)',
+      label: '#1F2418', labelHov: '#2A4A1E', hint: '#7C8068',
+    },
+  };
+
+  const TRUNK = {
+    p0:{x:500,y:600}, c1:{x:498,y:540}, c2:{x:502,y:470}, p1:{x:500,y:412},
+    lwStart:26, lwEnd:14, growStart:0.0, growEnd:0.42,
+  };
+
+  const PRIMARY = [
+    { p0:{x:500,y:412}, c1:{x:430,y:380}, c2:{x:340,y:340}, p1:{x:270,y:300}, lwStart:13, lwEnd:8, growStart:0.32, growEnd:0.6 },
+    { p0:{x:500,y:412}, c1:{x:570,y:380}, c2:{x:660,y:340}, p1:{x:730,y:300}, lwStart:13, lwEnd:8, growStart:0.32, growEnd:0.6 },
+  ];
+
+  const LEAVES = [
+    { id:'profile',      base:{x:130,y:230}, rot:-0.55, size:62, label:'Profile',        hint:'about me',           i18n:'leaf.profile'  },
+    { id:'publications', base:{x:280,y:160}, rot:-0.10, size:62, label:'Publications',   hint:'academic work',      i18n:'leaf.pub'      },
+    { id:'divulgation',  base:{x:460,y:175}, rot: 0.25, size:62, label:'Divulgación',    hint:'science for all',    i18n:'leaf.div'      },
+    { id:'photography',  base:{x:650,y:170}, rot:-0.20, size:62, label:'Photography',    hint:'images',             i18n:'leaf.photo'    },
+    { id:'essays',       base:{x:850,y:185}, rot: 0.50, size:62, label:'Essays & Poems', hint:'writing',            i18n:'leaf.essays'   },
+  ];
+
+  const SECONDARY = [
+    { p0:{x:270,y:300}, c1:{x:215,y:285}, c2:{x:170,y:260}, p1:{x:130,y:230}, lwStart:7, lwEnd:3, growStart:0.55, growEnd:0.78, leaf:'profile' },
+    { p0:{x:270,y:300}, c1:{x:275,y:248}, c2:{x:278,y:200}, p1:{x:280,y:160}, lwStart:7, lwEnd:3, growStart:0.55, growEnd:0.78, leaf:'publications' },
+    { p0:{x:270,y:300}, c1:{x:340,y:280}, c2:{x:400,y:230}, p1:{x:460,y:175}, lwStart:7, lwEnd:3, growStart:0.55, growEnd:0.78, leaf:'divulgation' },
+    { p0:{x:730,y:300}, c1:{x:690,y:265}, c2:{x:670,y:215}, p1:{x:650,y:170}, lwStart:7, lwEnd:3, growStart:0.55, growEnd:0.78, leaf:'photography' },
+    { p0:{x:730,y:300}, c1:{x:780,y:265}, c2:{x:820,y:225}, p1:{x:850,y:185}, lwStart:7, lwEnd:3, growStart:0.55, growEnd:0.78, leaf:'essays' },
+  ];
+
+  LEAVES.forEach(lf => {
+    leafShake.set(lf.id, { amp:0, phase:Math.random()*Math.PI*2, t:0 });
+    const dx = Math.sin(lf.rot), dy = -Math.cos(lf.rot);
+    lf.hitX = lf.base.x + dx * lf.size * 0.9;
+    lf.hitY = lf.base.y + dy * lf.size * 0.9;
+    lf.labelX = lf.base.x + dx * (lf.size * 1.85);
+    lf.labelY = lf.base.y + dy * (lf.size * 1.85);
+  });
+
+  const TWIGS = [];
+  function buildTwigs() {
+    TWIGS.length = 0;
+    PRIMARY.forEach((br, i) => {
+      [0.5, 0.75].forEach((t, k) => {
+        const pt = bezierPt(br, t);
+        const angle = (i === 0 ? 1 : -1) * (1.0 + 0.4 * k);
+        const len = 18;
+        const ex = pt.x + Math.cos(Math.PI/2 + angle) * len;
+        const ey = pt.y - Math.sin(Math.PI/2 + angle) * len * 0.6;
+        TWIGS.push({
+          p0:pt, c1:{x:pt.x+(ex-pt.x)*0.3, y:pt.y+(ey-pt.y)*0.4},
+          c2:{x:pt.x+(ex-pt.x)*0.7, y:pt.y+(ey-pt.y)*0.8}, p1:{x:ex,y:ey},
+          lwStart:2.5, lwEnd:0.8, growStart:0.62, growEnd:0.78,
+        });
+      });
+    });
+  }
+
+  function bezierPt(b, t) {
+    const u=1-t;
+    return { x:u*u*u*b.p0.x+3*u*u*t*b.c1.x+3*u*t*t*b.c2.x+t*t*t*b.p1.x,
+             y:u*u*u*b.p0.y+3*u*u*t*b.c1.y+3*u*t*t*b.c2.y+t*t*t*b.p1.y };
+  }
+
+  function drawFernLeaf(ctx, leaf, T, growthFraction, shake) {
+    if (growthFraction <= 0) return;
+    const tSec = shake.t / 1000;
+    const ox = shake.amp * Math.sin(tSec * 2.0 + shake.phase);
+    const oy = shake.amp * Math.cos(tSec * 1.5 + shake.phase * 1.3);
+    ctx.save();
+    ctx.translate(leaf.base.x + ox, leaf.base.y + oy);
+    ctx.rotate(leaf.rot);
+    const len = leaf.size * 1.6 * growthFraction;
+    const N = 11;
+    const haloR = leaf.size * 1.5 * growthFraction;
+    const grad = ctx.createRadialGradient(0, -len*0.4, 0, 0, -len*0.4, haloR);
+    grad.addColorStop(0, T.glow);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.globalAlpha = 0.9 * growthFraction;
+    ctx.beginPath(); ctx.arc(0, -len*0.4, haloR, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = T.leafEdge; ctx.lineWidth = 1.1; ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.85 * growthFraction;
+    ctx.beginPath(); ctx.moveTo(0,0);
+    ctx.quadraticCurveTo(leaf.size*0.05, -len*0.5, 0, -len); ctx.stroke();
+    for (let i = 0; i < N; i++) {
+      const t = (i+0.5)/N;
+      const start = t*0.55, end = start+0.45;
+      const local = Math.max(0, Math.min(1, (growthFraction-start)/(end-start)));
+      if (local <= 0) continue;
+      const eased = 1 - Math.pow(1-local, 2.4);
+      const yPos = -t*len;
+      const taper = (1 - t*0.75);
+      const llen = leaf.size*0.55*taper*eased;
+      const lwid = leaf.size*0.18*taper*eased;
+      const baseAngle = Math.PI*0.32;
+      [-1,1].forEach(side => {
+        ctx.save(); ctx.translate(0, yPos); ctx.rotate(side*baseAngle);
+        ctx.fillStyle = T.leafFill; ctx.strokeStyle = T.leafEdge;
+        ctx.lineWidth = 0.8; ctx.globalAlpha = 0.75;
+        ctx.beginPath(); ctx.moveTo(0,0);
+        ctx.bezierCurveTo(lwid*1.2,-llen*0.15, lwid*0.8,-llen*0.7, 0,-llen);
+        ctx.bezierCurveTo(-lwid*0.8,-llen*0.7, -lwid*1.2,-llen*0.15, 0,0);
+        ctx.fill(); ctx.globalAlpha=0.55; ctx.stroke();
+        ctx.globalAlpha=0.5; ctx.fillStyle=T.leafCore;
+        ctx.beginPath(); ctx.moveTo(0,-llen*0.1);
+        ctx.bezierCurveTo(lwid*0.55,-llen*0.25, lwid*0.35,-llen*0.65, 0,-llen*0.92);
+        ctx.bezierCurveTo(-lwid*0.35,-llen*0.65, -lwid*0.55,-llen*0.25, 0,-llen*0.1);
+        ctx.fill(); ctx.restore();
+      });
+    }
+    ctx.restore();
+  }
+
+  function drawBranchPartial(ctx, branch, t01, T) {
+    if (t01 <= 0) return;
+    const t = Math.min(1, t01);
+    const steps = 28;
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const u = (i/steps)*t;
+      const p = bezierPt(branch, u);
+      const u2 = Math.min(1, u+0.005);
+      const p2 = bezierPt(branch, u2);
+      const tx=p2.x-p.x, ty=p2.y-p.y;
+      const tlen=Math.hypot(tx,ty)||1;
+      const nx=-ty/tlen, ny=tx/tlen;
+      const lwAt = branch.lwStart*(1-u/t)+branch.lwEnd*(u/t);
+      pts.push({x:p.x,y:p.y,nx,ny,lw:lwAt,u});
+    }
+    ctx.save(); ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.strokeStyle=T.barkDark;
+    ctx.lineWidth=branch.lwStart*(1-t*0.5)+branch.lwEnd*(t*0.5);
+    ctx.globalAlpha=0.95;
+    ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y); ctx.stroke();
+    ctx.strokeStyle=T.barkMid;
+    ctx.lineWidth=(branch.lwStart*(1-t*0.5)+branch.lwEnd*(t*0.5))*0.78;
+    ctx.globalAlpha=0.95;
+    ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y); ctx.stroke();
+    ctx.strokeStyle=T.barkLight;
+    ctx.lineWidth=Math.max(0.8,(branch.lwStart*(1-t*0.5)+branch.lwEnd*(t*0.5))*0.18);
+    ctx.globalAlpha=0.55;
+    ctx.beginPath();
+    for(let i=0;i<pts.length;i++){
+      const p=pts[i], off=p.lw*0.32;
+      const x=p.x+p.nx*off, y=p.y+p.ny*off;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    } ctx.stroke();
+    if (branch.lwStart >= 6) {
+      ctx.strokeStyle=T.barkDark; ctx.lineWidth=0.7; ctx.globalAlpha=0.55;
+      const seed=(branch.p0.x*13.7+branch.p0.y*7.3+branch.p1.x);
+      for(let i=1;i<pts.length-1;i+=1){
+        if(((i*113+Math.floor(seed))%7)>3) continue;
+        const p=pts[i], half=p.lw*0.42;
+        const j=((i*91+Math.floor(seed))%100)/100-0.5;
+        const start=(j>0?-half*0.3:-half), end=(j>0?half:half*0.3);
+        ctx.beginPath();
+        ctx.moveTo(p.x+p.nx*start,p.y+p.ny*start);
+        ctx.lineTo(p.x+p.nx*end,p.y+p.ny*end); ctx.stroke();
+      }
+      ctx.globalAlpha=0.35; ctx.lineWidth=0.6;
+      for(let k=0;k<3;k++){
+        const offset=((k-1)/2)*0.5;
+        const startI=1+Math.floor(((k*31+Math.floor(seed))%5));
+        const endI=Math.min(pts.length-1,startI+6+((k*17+Math.floor(seed))%5));
+        ctx.beginPath();
+        for(let i=startI;i<=endI;i++){
+          const p=pts[i]; const wob=Math.sin(i*1.7+k)*0.4;
+          const off=(offset+wob*0.05)*p.lw;
+          const x=p.x+p.nx*off, y=p.y+p.ny*off;
+          if(i===startI) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        } ctx.stroke();
+      }
+      const knots=branch.lwStart>=12?2:1;
+      ctx.globalAlpha=0.6; ctx.fillStyle=T.barkDark;
+      for(let k=0;k<knots;k++){
+        const idx=Math.floor((((k+1)*37+Math.floor(seed))%(pts.length-4))+2);
+        const p=pts[idx]; const r=p.lw*0.18;
+        ctx.beginPath();
+        ctx.ellipse(p.x+p.nx*p.lw*0.05,p.y+p.ny*p.lw*0.05,r,r*0.7,0,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  function clamp01(x){return Math.max(0,Math.min(1,x));}
+
+  function drawTrunk(ctx, T, growth) {
+    const t=clamp01((growth-TRUNK.growStart)/(TRUNK.growEnd-TRUNK.growStart));
+    drawBranchPartial(ctx,TRUNK,t,T);
+    if(t>0.05){
+      ctx.save(); ctx.globalAlpha=0.25*t; ctx.fillStyle=T.bark;
+      ctx.beginPath(); ctx.ellipse(500,600,30,5,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    }
+  }
+
+  function drawAllBranches(ctx, T, growth) {
+    PRIMARY.forEach(br=>{const t=clamp01((growth-br.growStart)/(br.growEnd-br.growStart));drawBranchPartial(ctx,br,t,T);});
+    SECONDARY.forEach(br=>{const t=clamp01((growth-br.growStart)/(br.growEnd-br.growStart));drawBranchPartial(ctx,br,t,T);});
+    TWIGS.forEach(br=>{const t=clamp01((growth-br.growStart)/(br.growEnd-br.growStart));drawBranchPartial(ctx,br,t,T);});
+  }
+
+  function spawnParticle() {
+    const leaf=LEAVES[Math.floor(Math.random()*LEAVES.length)];
+    const r=10+Math.random()*35, a=Math.random()*Math.PI*2;
+    particles.push({
+      x:leaf.hitX+Math.cos(a)*r, y:leaf.hitY+Math.sin(a)*r,
+      vx:(Math.random()-0.5)*0.12, vy:-0.04-Math.random()*0.12,
+      life:0, max:4000+Math.random()*3500,
+      size:0.7+Math.random()*1.3, twinkle:Math.random()*Math.PI*2,
+    });
+  }
+  function updateParticles(dt) {
+    if(Math.random()<0.25) spawnParticle();
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];
+      p.life+=dt; p.x+=p.vx*dt*0.06; p.y+=p.vy*dt*0.06; p.twinkle+=dt*0.003;
+      if(p.life>p.max) particles.splice(i,1);
+    }
+  }
+  function drawParticles(ctx, T) {
+    ctx.save();
+    for(const p of particles){
+      const lt=p.life/p.max;
+      const fade=lt<0.2?lt/0.2:(lt>0.8?(1-lt)/0.2:1);
+      const tw=0.6+0.4*Math.sin(p.twinkle);
+      ctx.globalAlpha=fade*tw*0.85; ctx.fillStyle=T.particle;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha=fade*tw*0.18;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.size*3.5,0,Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawLabels(ctx, T, growth) {
+    const labelAlpha=clamp01((growth-0.85)/0.15);
+    if(labelAlpha<=0) return;
+    LEAVES.forEach(leaf=>{
+      const isHov=hoveredLeaf===leaf.id;
+      ctx.save(); ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.globalAlpha=labelAlpha*(isHov?1:0.92);
+      ctx.font=`${isHov?500:400} 22px 'Cormorant Garamond', serif`;
+      ctx.fillStyle=isHov?T.labelHov:T.label;
+      ctx.fillText(leaf.label, leaf.labelX, leaf.labelY-4);
+      ctx.font=`italic 14px 'EB Garamond', serif`;
+      ctx.fillStyle=T.hint; ctx.globalAlpha=labelAlpha*(isHov?0.95:0.7);
+      ctx.fillText(leaf.hint, leaf.labelX, leaf.labelY+14);
+      ctx.restore();
+    });
+  }
+
+  function setupCanvas() {
+    const home=document.getElementById('home');
+    const headerH=document.querySelector('.name-header').offsetHeight;
+    const availW=home.clientWidth;
+    const availH=home.clientHeight-headerH-40;
+    const targetW=Math.min(availW,1200);
+    const targetH=Math.min(availH,720);
+    VS=Math.min(targetW/VW,targetH/VH);
+    const pw=Math.round(VW*VS*dpr);
+    const ph=Math.round(VH*VS*dpr);
+    mainCanvas.width=pw; mainCanvas.height=ph;
+    mainCanvas.style.width=Math.round(VW*VS)+'px';
+    mainCanvas.style.height=Math.round(VH*VS)+'px';
+  }
+
+  function render() {
+    const T=isDark?THEMES.dark:THEMES.light;
+    const W=mainCanvas.width, H=mainCanvas.height;
+    mainCtx.clearRect(0,0,W,H);
+    mainCtx.save(); mainCtx.scale(VS*dpr,VS*dpr);
+    drawTrunk(mainCtx,T,growthT);
+    drawAllBranches(mainCtx,T,growthT);
+    LEAVES.forEach(leaf=>{
+      const start=0.78, span=0.22;
+      const offset=(LEAVES.indexOf(leaf)-2)*0.012;
+      const lt=clamp01((growthT-(start+offset))/span);
+      const shake=leafShake.get(leaf.id);
+      drawFernLeaf(mainCtx,leaf,T,lt,shake);
+    });
+    drawParticles(mainCtx,T);
+    drawLabels(mainCtx,T,growthT);
+    mainCtx.restore();
+  }
+
+  let lastFrame=0;
+  function loop(now) {
+    if(!lastFrame) lastFrame=now;
+    const dt=Math.min(50,now-lastFrame); lastFrame=now;
+    if(!growthDone){
+      const elapsed=now-growthStartTime, dur=3600;
+      growthT=clamp01(elapsed/dur);
+      growthT=1-Math.pow(1-growthT,2.4);
+      if(elapsed>=dur){growthT=1;growthDone=true;}
+    }
+    LEAVES.forEach(leaf=>{
+      const sh=leafShake.get(leaf.id); sh.t+=dt;
+      let target=0;
+      if(mouseX>=0){
+        const dx=mouseX-leaf.hitX, dy=mouseY-leaf.hitY;
+        const d=Math.hypot(dx,dy);
+        if(d<130) target=(1-d/130)*1.4;
+      }
+      sh.amp+=(target-sh.amp)*0.04;
+    });
+    updateParticles(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  mainCanvas.addEventListener('mousemove', e=>{
+    const rect=mainCanvas.getBoundingClientRect();
+    mouseX=(e.clientX-rect.left)/VS; mouseY=(e.clientY-rect.top)/VS;
+    let found=null;
+    for(const leaf of LEAVES){
+      const dx=mouseX-leaf.hitX, dy=mouseY-leaf.hitY;
+      if(dx*dx+dy*dy<3500){found=leaf.id;break;}
+    }
+    if(found!==hoveredLeaf){
+      hoveredLeaf=found;
+      mainCanvas.style.cursor=found?'pointer':'default';
+    }
+  });
+  mainCanvas.addEventListener('mouseleave',()=>{
+    hoveredLeaf=null; mouseX=mouseY=-1; mainCanvas.style.cursor='default';
+  });
+  mainCanvas.addEventListener('click',()=>{
+    if(hoveredLeaf&&window.startZoomToLeaf){
+      const leaf=LEAVES.find(l=>l.id===hoveredLeaf);
+      if(leaf){
+        const rect=mainCanvas.getBoundingClientRect();
+        const sx=rect.left+leaf.hitX*VS, sy=rect.top+leaf.hitY*VS;
+        window.startZoomToLeaf(hoveredLeaf,sx,sy);
+      }
+    }
+  });
+
+  window.TreeEngine={
+    init(){buildTwigs();setupCanvas();growthStartTime=performance.now()+250;requestAnimationFrame(loop);},
+    setDark(v){isDark=v;},
+    resize(){setupCanvas();},
+    setLabels(map){
+      LEAVES.forEach(lf=>{const t=map[lf.i18n];if(t){lf.label=t.label;lf.hint=t.hint;}});
+    },
+    replay(){growthDone=false;growthStartTime=performance.now();growthT=0;particles.length=0;},
+  };
+})();
+</script>
+
+<!-- ══ APP LOGIC ══ -->
+<script>
+// ── Data stores (populated from content.json) ──
+let PUBS     = [];
+let ESSAYS   = [];
+let OUTREACH = [];
+let PHOTOS   = [];
+let PROFILE  = { title:'Profile', html:'', cv_pdf:null };
+
+// ── KaTeX helper ──
+let katexReady = false;
+let mathQueue  = [];  // elements queued for rendering before KaTeX loaded
+
+function tryRenderMath() {
+    if (!katexReady || !window.renderMathInElement) return;
+    // Drain queue
+    while (mathQueue.length) {
+        const el = mathQueue.shift();
+        try {
+            renderMathInElement(el, {
+                delimiters:[
+                    {left:'$$',right:'$$',display:true},
+                    {left:'$', right:'$', display:false},
+                ],
+                throwOnError:false,
+            });
+        } catch(e){}
+    }
+}
+function renderMath(el) {
+    if (katexReady && window.renderMathInElement) {
+        try {
+            renderMathInElement(el, {
+                delimiters:[
+                    {left:'$$',right:'$$',display:true},
+                    {left:'$', right:'$', display:false},
+                ],
+                throwOnError:false,
+            });
+        } catch(e){}
+    } else {
+        mathQueue.push(el);
+    }
+}
+
+// ── Helpers ──
+function yearFrom(dateStr) {
+    if (!dateStr) return '';
+    return String(dateStr).slice(0,4);
+}
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    try {
+        const d = new Date(dateStr + 'T12:00:00');
+        return d.toLocaleDateString('en-US', {year:'numeric', month:'long'});
+    } catch(e) { return yearFrom(dateStr); }
+}
+
+// ── List builders ──
+function buildPubList() {
+    const ul = document.getElementById('pub-chron-list');
+    ul.innerHTML = '';
+    if (!PUBS.length) {
+        ul.innerHTML = '<p class="note">No publications yet.</p>';
+        return;
+    }
+    PUBS.forEach((p, i) => {
+        const li = document.createElement('li');
+        li.className = 'chron-item';
+        const pill = p.status
+            ? `<span class="status-pill status-${p.status}">${p.status}</span>`
+            : '';
+        li.innerHTML = `
+            <span class="chron-year">${p.year || ''}</span>
+            <div>
+                <div class="chron-row-top">${pill}</div>
+                <div class="chron-title">${p.title}</div>
+                <div class="chron-meta">${p.authors || ''} · ${p.journal || ''}</div>
+            </div>`;
+        li.onclick = () => openPubDetail(i);
+        ul.appendChild(li);
+    });
+}
+
+function buildDivList() {
+    const ul = document.getElementById('div-chron-list');
+    ul.innerHTML = '';
+    if (!OUTREACH.length) {
+        ul.innerHTML = '<p class="note">No outreach pieces yet.</p>';
+        return;
+    }
+    OUTREACH.forEach((o, i) => {
+        const li = document.createElement('li');
+        li.className = 'chron-item';
+        li.innerHTML = `
+            <span class="chron-year">${yearFrom(o.date)}</span>
+            <div>
+                <div class="chron-title">${o.title}</div>
+            </div>`;
+        li.onclick = () => openDivDetail(i);
+        ul.appendChild(li);
+    });
+}
+
+function buildEssayList() {
+    const ul = document.getElementById('essay-chron-list');
+    ul.innerHTML = '';
+    if (!ESSAYS.length) {
+        ul.innerHTML = '<p class="note">No essays yet.</p>';
+        return;
+    }
+    ESSAYS.forEach((e, i) => {
+        const li = document.createElement('li');
+        li.className = 'chron-item';
+        li.innerHTML = `
+            <span class="chron-year">${yearFrom(e.date)}</span>
+            <div>
+                <div class="chron-title">${e.title}</div>
+                <div class="chron-meta">${e.type || 'essay'}</div>
+            </div>`;
+        li.onclick = () => openEssayDetail(i);
+        ul.appendChild(li);
+    });
+}
+
+function buildPhotoGrid() {
+    const grid = document.getElementById('photo-grid');
+    grid.innerHTML = '';
+    if (!PHOTOS.length) {
+        grid.innerHTML = '<p class="photo-empty" style="grid-column:1/-1">Photos coming soon.</p>';
+        return;
+    }
+    PHOTOS.forEach(ph => {
+        const cell = document.createElement('div');
+        cell.className = 'photo-cell';
+        if (ph.src) {
+            const img = document.createElement('img');
+            img.src = ph.src;
+            img.alt = ph.name || '';
+            cell.appendChild(img);
+            cell.onclick = () => openLightbox(ph.src, ph.name || '');
+        } else {
+            cell.classList.add('placeholder');
+            cell.textContent = '— your image here —';
+        }
+        grid.appendChild(cell);
+    });
+}
+
+function buildProfile() {
+    const body = document.getElementById('profile-body');
+    body.innerHTML = PROFILE.html || '<p class="note">Profile coming soon.</p>';
+    renderMath(body);
+    const cvRow = document.getElementById('profile-cv-row');
+    cvRow.innerHTML = '';
+    if (PROFILE.cv_pdf) {
+        cvRow.innerHTML = `<a class="cv-link" href="${PROFILE.cv_pdf}" target="_blank" rel="noopener">
+            ↓ Download CV (PDF)</a>`;
+    }
+}
+
+// ── Detail views ──
+function openPubDetail(i) {
+    const p = PUBS[i];
+    document.getElementById('pub-d-title').textContent = p.title;
+    const doi = p.doi
+        ? `<a href="${p.doi}" target="_blank" rel="noopener">DOI ↗</a>`
+        : '';
+    document.getElementById('pub-d-meta').innerHTML =
+        `${p.authors || ''}<br>${p.journal || ''}${p.volume ? ', ' + p.volume : ''}<br>${doi}`;
+    const absEl = document.getElementById('pub-d-abstract');
+    absEl.textContent = p.abstract || '';
+    renderMath(absEl);
+    document.getElementById('pub-list-view').classList.add('hidden');
+    document.getElementById('pub-detail-view').classList.add('visible');
+    document.getElementById('section-publications').scrollTop = 0;
+}
+function closePubDetail() {
+    document.getElementById('pub-detail-view').classList.remove('visible');
+    document.getElementById('pub-list-view').classList.remove('hidden');
+    document.getElementById('section-publications').scrollTop = 0;
+}
+
+function openDivDetail(i) {
+    const o = OUTREACH[i];
+    document.getElementById('div-d-title').textContent = o.title;
+    document.getElementById('div-d-meta').textContent = formatDate(o.date);
+    const bodyEl = document.getElementById('div-d-body');
+    bodyEl.innerHTML = o.html || '';
+    renderMath(bodyEl);
+    document.getElementById('div-list-view').classList.add('hidden');
+    document.getElementById('div-detail-view').classList.add('visible');
+    document.getElementById('section-divulgation').scrollTop = 0;
+}
+function closeDivDetail() {
+    document.getElementById('div-detail-view').classList.remove('visible');
+    document.getElementById('div-list-view').classList.remove('hidden');
+    document.getElementById('section-divulgation').scrollTop = 0;
+}
+
+function openEssayDetail(i) {
+    const e = ESSAYS[i];
+    const isPoem = e.type === 'poem';
+    document.getElementById('essay-d-label').textContent = e.type || 'essay';
+    document.getElementById('essay-d-title').textContent = e.title;
+    document.getElementById('essay-d-meta').textContent = formatDate(e.date);
+    const wrap = document.getElementById('essay-d-body-wrap');
+    const bodyClass = isPoem
+        ? 'detail-body poem-body'
+        : 'detail-body essay-body';
+    wrap.innerHTML = `<div class="${bodyClass}">${e.html || ''}</div>`;
+    renderMath(wrap);
+    document.getElementById('essay-list-view').classList.add('hidden');
+    document.getElementById('essay-detail-view').classList.add('visible');
+    document.getElementById('section-essays').scrollTop = 0;
+}
+function closeEssayDetail() {
+    document.getElementById('essay-detail-view').classList.remove('visible');
+    document.getElementById('essay-list-view').classList.remove('hidden');
+    document.getElementById('section-essays').scrollTop = 0;
+}
+
+function openLightbox(src, caption) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = caption || '';
+    document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ── Navigation ──
+const home     = document.getElementById('home');
+const sections = document.querySelectorAll('.section-view');
+const zoomOverlay = document.getElementById('zoom-overlay');
+
+window.startZoomToLeaf = function(leafId, screenX, screenY) {
+    const x = (screenX / window.innerWidth) * 100;
+    const y = (screenY / window.innerHeight) * 100;
+    zoomOverlay.style.setProperty('--zx', x + '%');
+    zoomOverlay.style.setProperty('--zy', y + '%');
+    zoomOverlay.classList.add('active');
+    home.style.transformOrigin = `${x}% ${y}%`;
+    home.style.transform = 'scale(1.6)';
+    home.style.opacity = '0';
+    home.style.pointerEvents = 'none';
+    home.style.transition = 'transform 1s cubic-bezier(.7,.0,.4,1), opacity .9s ease';
+    setTimeout(() => {
+        const target = document.getElementById('section-' + leafId);
+        if (target) { target.classList.add('active'); target.scrollTop = 0; }
+    }, 700);
+};
+
+function goHome() {
+    closePubDetail(); closeDivDetail(); closeEssayDetail();
+    sections.forEach(s => s.classList.remove('active'));
+    zoomOverlay.classList.remove('active');
+    setTimeout(() => {
+        home.style.transform = '';
+        home.style.opacity = '';
+        home.style.pointerEvents = '';
+    }, 50);
+}
+
+// ── Mode toggle ──
+let isDarkMode = true;
+function toggleMode() {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('dark', isDarkMode);
+    if (window.TreeEngine) window.TreeEngine.setDark(isDarkMode);
+    if (window.MatrixBG)   window.MatrixBG.setDark(isDarkMode);
+}
+
+// ── i18n ──
+const I18N = {
+    en: {
+        'hero.hint':         'touch a leaf to explore',
+        'profile.eyebrow':   'about me',
+        'profile.title':     'Profile',
+        'profile.subtitle':  'Mathematician, writer, a curious mind between rigour and intuition.',
+        'pub.eyebrow':       'academic work',
+        'pub.title':         'Publications',
+        'pub.subtitle':      'Academic research in ultrametric analysis.',
+        'div.eyebrow':       'science for everyone',
+        'div.title':         'Outreach',
+        'div.subtitle':      'The same mathematics told without equations.',
+        'photo.eyebrow':     'images',
+        'photo.title':       'Photography',
+        'photo.subtitle':    'Images from the field, the mountains, and the places where thought rests.',
+        'essays.eyebrow':    'writing',
+        'essays.title':      'Essays & Poems',
+        'essays.subtitle':   'Thought and language at the edge of form.',
+        'nav.back':          'back to the tree',
+        'nav.publications':  'publications',
+        'nav.outreach':      'outreach',
+        'nav.essays':        'essays & poems',
+        'nav.tree':          'tree',
+        'label.publication': 'Publication',
+        'label.abstract':    'Abstract',
+        'label.outreach':    'Outreach',
+        'mode.toggle':       'Night / day mode',
+        'leaf.profile':  { label:'Profile',        hint:'about me'           },
+        'leaf.pub':      { label:'Publications',   hint:'academic work'      },
+        'leaf.div':      { label:'Outreach',       hint:'science for all'    },
+        'leaf.photo':    { label:'Photography',    hint:'images'             },
+        'leaf.essays':   { label:'Essays & Poems', hint:'writing'            },
+    },
+    es: {
+        'hero.hint':         'toca una hoja para explorar',
+        'profile.eyebrow':   'sobre mí',
+        'profile.title':     'Perfil',
+        'profile.subtitle':  'Matemático, escritor, una mente curiosa entre el rigor y la intuición.',
+        'pub.eyebrow':       'trabajo académico',
+        'pub.title':         'Publicaciones',
+        'pub.subtitle':      'Investigación académica en análisis ultramétrico.',
+        'div.eyebrow':       'ciencia para todos',
+        'div.title':         'Divulgación',
+        'div.subtitle':      'La misma matemática contada sin ecuaciones.',
+        'photo.eyebrow':     'imágenes',
+        'photo.title':       'Fotografía',
+        'photo.subtitle':    'Imágenes del campo, la montaña y los lugares donde el pensamiento descansa.',
+        'essays.eyebrow':    'escritura',
+        'essays.title':      'Ensayos y Poemas',
+        'essays.subtitle':   'Pensamiento y lenguaje en el límite de la forma.',
+        'nav.back':          'volver al árbol',
+        'nav.publications':  'publicaciones',
+        'nav.outreach':      'divulgación',
+        'nav.essays':        'ensayos y poemas',
+        'nav.tree':          'árbol',
+        'label.publication': 'Publicación',
+        'label.abstract':    'Resumen',
+        'label.outreach':    'Divulgación',
+        'mode.toggle':       'Modo noche / día',
+        'leaf.profile':  { label:'Perfil',            hint:'sobre mí'              },
+        'leaf.pub':      { label:'Publicaciones',     hint:'trabajo académico'     },
+        'leaf.div':      { label:'Divulgación',       hint:'ciencia para todos'    },
+        'leaf.photo':    { label:'Fotografía',        hint:'imágenes'              },
+        'leaf.essays':   { label:'Ensayos y Poemas',  hint:'escritura'             },
+    },
+};
+
+let currentLang = 'en';
+function applyLang(lang) {
+    const dict = I18N[lang] || I18N.en;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        const v = dict[k];
+        if (typeof v === 'string') el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const k = el.getAttribute('data-i18n-title');
+        if (dict[k]) el.title = dict[k];
+    });
+    if (window.TreeEngine && window.TreeEngine.setLabels) {
+        window.TreeEngine.setLabels(dict);
+    }
+    document.getElementById('lang-current').textContent = lang.toUpperCase();
+    document.getElementById('lang-other').textContent = (lang === 'en' ? 'ES' : 'EN');
+    currentLang = lang;
+}
+function toggleLang() { applyLang(currentLang === 'en' ? 'es' : 'en'); }
+
+// ── Resize ──
+window.addEventListener('resize', () => {
+    if (window.TreeEngine) window.TreeEngine.resize();
+});
+
+// ── Bootstrap: load content.json, then start engines ──
+let appStarted = false;
+function initApp() {
+    if (appStarted) return;
+    appStarted = true;
+    if (window.MatrixBG) window.MatrixBG.init();
+    if (window.TreeEngine) window.TreeEngine.init();
+    applyLang('en');
+}
+
+fetch('content.json')
+    .then(r => {
+        if (!r.ok) throw new Error('content.json not found');
+        return r.json();
+    })
+    .then(data => {
+        PUBS     = data.publications || [];
+        ESSAYS   = data.essays       || [];
+        OUTREACH = data.outreach     || [];
+        PHOTOS   = data.photos       || [];
+        PROFILE  = data.profile      || { title:'Profile', html:'', cv_pdf:null };
+        buildProfile();
+        buildPubList();
+        buildDivList();
+        buildEssayList();
+        buildPhotoGrid();
+    })
+    .catch(() => {
+        // No content.json present — show helpful placeholder text
+        document.getElementById('profile-body').innerHTML =
+            '<p class="note">Run <code>./build.sh</code> in your website folder to generate content.json, then open the site.</p>';
+        buildPubList(); buildDivList(); buildEssayList(); buildPhotoGrid();
+    })
+    .finally(() => {
+        // Start visual engines regardless
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(initApp);
+            setTimeout(initApp, 1500);
+        } else {
+            initApp();
+        }
+    });
+</script>
+
+</body>
+</html>

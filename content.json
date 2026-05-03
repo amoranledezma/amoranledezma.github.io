@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-03",
+  "profile": {
+    "title": "About",
+    "html": "<p>Ángel Morán is a researcher and writer whose work spans ultrametric analysis, mathematical structures, and the quiet spaces where rigorous thought meets poetic intuition.</p>\n<p>Trained at <em>[your institution]</em>, currently <em>[your role / affiliation]</em>. His research lives at the intersection of formal structure and human experience: non-Archimedean geometry, hierarchical models, the way distance can be defined so that nearness becomes a tree.</p>\n<p>Outside the seminar, he writes essays and poems on the philosophy of mathematics, takes photographs in the field, and hikes the central mountains whenever the chalk runs out.</p>\n<h2>Contact</h2>\n<ul><li>Email — <em>you@example.com</em></li><li>ORCID — <a href=\"https://orcid.org/\" target=\"_blank\" rel=\"noopener\">0000-0000-0000-0000</a></li><li>GitHub — <a href=\"https://github.com/amoranledezma\" target=\"_blank\" rel=\"noopener\">amoranledezma</a></li><li>arXiv — <em>your arxiv id</em></li></ul>",
+    "cv_pdf": null
+  },
+  "publications": [
+    {
+      "id": "2024-ultrametric-spaces",
+      "year": 2024,
+      "status": "published",
+      "title": "Ultrametric spaces and hierarchical clustering in non-Archimedean analysis",
+      "authors": "Morán, Á., García, R. & Soto, L.",
+      "journal": "Journal of Mathematical Analysis and Applications",
+      "volume": "Vol. 538, no. 2, pp. 128–154",
+      "doi": "https://doi.org/10.1000/example",
+      "abstract": "We investigate the structural properties of ultrametric spaces in the context of non-Archimedean functional analysis. By extending classical results on dendrograms to infinite-dimensional settings, we establish a correspondence between isometry classes of ultrametric spaces and a new family of hierarchical operators. Our main theorem provides necessary and sufficient conditions for the existence of optimal ultrametric approximations in Banach lattices. Applications to $p$-adic analysis and phylogenetic tree reconstruction are discussed."
+    },
+    {
+      "id": "2022-fixed-point-ultrametric",
+      "year": 2022,
+      "status": "published",
+      "title": "On the fixed-point theorems in complete ultrametric spaces",
+      "authors": "Morán, Á.",
+      "journal": "Topology and its Applications",
+      "volume": "Vol. 312, pp. 107–118",
+      "doi": "https://doi.org/10.1000/example2",
+      "abstract": "This paper presents a generalization of the Banach contraction principle to the setting of complete ultrametric spaces. We prove that every strictly contractive map on a spherically complete ultrametric space admits a unique fixed point, and provide sharp bounds on the rate of convergence of successive approximations. The results are applied to the study of $p$-adic differential equations and non-Archimedean dynamical systems."
+    }
+  ],
+  "essays": [
+    {
+      "id": "2024-03-the-tree-and-the-distance",
+      "title": "The tree and the distance",
+      "date": "2024-03-15",
+      "type": "essay",
+      "linked_publication": null,
+      "html": "<p>Every metric imposes an order on chaos. To measure is, in the end, to decide what is <strong>near</strong> and what is <strong>far</strong> — and that decision, which looks merely technical, has deep philosophical consequences.</p>\n<p>The <em>ultrametric</em> distance has taught me that there is more than one way to be close. In the ordinary world, the triangle inequality says $$d(A, C) \\;\\leq\\; d(A, B) + d(B, C).$$ In the ultrametric world, that same inequality is replaced by a far stricter rule: $$d(A, C) \\;\\leq\\; \\max\\bigl(d(A, B),\\; d(B, C)\\bigr).$$ The third is never the farthest. Every triangle is isosceles. Every sphere is both open and closed. Geometry stops being smooth and becomes branched.</p>\n<p>What does this say about how we understand relationships? Perhaps that nearness is not inherited gradually but by belonging to the same branch. We are close because we share a common ancestor, a node of the tree, a cluster. The kin precedes the distance.</p>"
+    },
+    {
+      "id": "2023-11-fixed-point-theorem",
+      "title": "Fixed-point theorem",
+      "date": "2023-11-02",
+      "type": "poem",
+      "linked_publication": null,
+      "html": "<p>Every contraction\nleads to a point that will not move.</p>\n<p>Apply the function\nagain and again —\nthe world contracts,\nspace collapses\nonto itself\nuntil only a name\nremains.</p>\n<p>That is your fixed point.\nYou did not seek it:\nyou converged.</p>"
+    },
+    {
+      "id": "2023-04-on-the-usefulness-of-empty-spaces",
+      "title": "On the usefulness of empty spaces",
+      "date": "2023-04-08",
+      "type": "essay",
+      "linked_publication": null,
+      "html": "<p>In mathematics there is the <em>empty set</em>, $\\emptyset$. It is the set that contains nothing, and yet it is the foundation of all of set theory. Without the void there is no unit; without the unit there is no number; without number there is no geometry, no analysis, no algebra.</p>\n<p>It seems to me that something analogous happens in writing. Pauses, silences, the white spaces between paragraphs are not absences of content: they are the content of form itself. An essay without empty spaces is an essay without breath, and a reader without breath cannot think.</p>\n<p>I write, then, with the same care a mathematician brings to a proof: choosing not only what goes in but what stays out. <strong>Omission as method. Silence as argument.</strong></p>"
+    }
+  ],
+  "outreach": [
+    {
+      "id": "2024-ultrametric-spaces",
+      "title": "Ultrametric spaces, told without equations",
+      "date": "2024-03-20",
+      "type": "essay",
+      "linked_publication": "2024-ultrametric-spaces",
+      "html": "<p>Imagine you have a set of objects and you want to measure how <em>different</em> they are from each other. We usually use ordinary distances — the distance between two cities, for instance. But there is another kind of distance, called <strong>ultrametric</strong>, that obeys a far stricter rule: if you want to go from $A$ to $C$, the longest leg is never the direct one. You can always pass through some intermediate point $B$ without making the trip any worse.</p>\n<p>This seemingly technical property has a beautiful consequence: any set of objects equipped with an ultrametric distance organises itself naturally as a <strong>tree</strong>. Not as a metaphor of a tree, but literally as the mathematical structure of a tree, with branches and leaves. The same structure you see in family trees or in the biological classification of species.</p>\n<p>In this paper we explore what happens when we carry this idea into infinite-dimensional spaces — the territory of quantum physics and functional analysis — and find that the tree structure is preserved in surprising ways. We also show connections with the so-called <em>$p$-adic numbers</em>, an alternative family of number systems where \"near\" and \"far\" mean something entirely different from what we are used to.</p>"
+    },
+    {
+      "id": "2022-fixed-point-ultrametric",
+      "title": "The fixed-point theorem, told without equations",
+      "date": "2022-08-12",
+      "type": "essay",
+      "linked_publication": "2022-fixed-point-ultrametric",
+      "html": "<p>Have you ever used Google Maps and zoomed in until you reached your house? Every time you zoom, the map \"collapses\" toward the point you care about. In mathematics, something similar happens with <strong>fixed points</strong>: points that do not move when you apply a transformation.</p>\n<p>The theorem we study in this paper says that, under quite reasonable conditions, every contractive transformation — one that <em>pulls</em> points closer together — has exactly one fixed point. And more than that: if you start from any point and keep applying the transformation, you will inevitably converge toward that fixed point, like a spiral winding into its centre.</p>\n<p>What is new in our work is that we prove this result in the <em>ultrametric</em> world, where geometry behaves differently. In that world, every sphere is both open and closed, every triangle is isosceles, and ordinary geometric intuition fails in fascinating ways.</p>"
+    }
+  ],
+  "photos": []
+}
